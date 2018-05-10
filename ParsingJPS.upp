@@ -1,0 +1,15 @@
+uses
+	Core;
+
+file
+	ParsingJPS.h,
+	JpsDataClass.h,
+	JpsDataClass.cpp,
+	ParsingJPS.cpp,
+	InitFile.cpp,
+	JpsFiles.cpp,
+	Fucntions.cpp;
+
+mainconfig
+	"" = "";
+
