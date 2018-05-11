@@ -3,12 +3,12 @@
 
 using namespace Upp;
 
-void Keplerian::midAnomCalc()
+void CKeplerian::midAnomCalc()
 {
 	M = E - e * sin(E);
 }
 
-void Keplerian::exAnomCalc()
+void CKeplerian::exAnomCalc()
 {
 	double EE = M;
 	double E1;
@@ -21,16 +21,10 @@ void Keplerian::exAnomCalc()
 	E = E1;
 }
 
-void Keplerian::trueAnomCalc()
+void CKeplerian::trueAnomCalc()
 {
 	double at2Sin = (sqrt(1.0 - sqr(e))*sin(E))/(1.0 - e*cos(E));
 	double at2Cos = ((cos(E)- e)/(1.0 - e*cos(E)));
 	
 	v = atan2(at2Sin, at2Cos);
-}
-
-
-CONSOLE_APP_MAIN
-{
-	
 }
