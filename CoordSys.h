@@ -1,9 +1,9 @@
-#ifndef _CoordSys_CoordSys_h_
-#define _CoordSys_CoordSys_h_
+#ifndef _model_CoordSys_h_
+#define _model_CoordSys_h_
 
 #include "cmath"
 
-class Cartesian{
+class CCartesian{
 public:
 	double x;
 	double y;
@@ -13,7 +13,7 @@ public:
 	double dz;
 };
 
-class Keplerian{
+class CKeplerian{
 public:
 	double a;
 	double e;
@@ -29,5 +29,28 @@ public:
 	void midAnomCalc();
 	void trueAnomCalc();
 };
+
+class CAnglesRot{
+public:
+	double x;
+	double y;
+	double z;
+	double teta;
+	double fi;
+	double psi;
+	
+	CAnglesRot(double aX, double aY, double aZ, double aTeta, double aFi, double aPsi)
+		{
+		x = aX;
+		y = aY;
+		z = aZ;
+		teta = aTeta;
+		fi = aFi;
+		psi = aPsi;
+		}
+};
+
+CCartesian KepToDec(CKeplerian);
+CAnglesRot RotVector(CAnglesRot);
 
 #endif
