@@ -18,8 +18,8 @@ CONSOLE_APP_MAIN
 	*/
 		
 	// формирование начальных значений
-	Keplerian kep; // Создание объекта класса
-	Cartesian car;
+	CKeplerian kep; // Создание объекта класса
+	CCartesian car;
 	
 	kep.e = 0.760033272672*pow(10,-2);				// ЭКСЦЕНТРИСИТЕТ
 	kep.a = sqr(0.515366792870*pow(10,4));			// большая полуось = м
@@ -35,12 +35,8 @@ CONSOLE_APP_MAIN
 	double tk = 0.863700000000*pow(10,5);
 	double M0 = 0.136321882824*10;
 	kep.M = M0 + n * tk;								// средняя аномалия
-
 	
 	// формирование Кеплеровских координат
-	car = creat_coord(kep);
+	car = KepToDec(kep);
 	
-	// перевод Кеплеровских координат в Декартовые координаты
-	rotate_vector(car, kep);
-
 }
