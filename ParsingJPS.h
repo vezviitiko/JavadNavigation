@@ -4,9 +4,12 @@
 #include <Core/Core.h>
 #include <fstream>
 
+#include <iostream>
+
 #include "JpsDataClass.h"
 
 using namespace Upp;
+using namespace std;
 
 class JpsFile :public Moveable<JpsFile>{
 public:
@@ -39,5 +42,6 @@ public:
 
 //Дополнительные функции
 String Revert(String);
-String GetBitsStr(String recStr);
+String GetBitsStr(string recStr);
+double BinaryToDecimal(String binStr);
 #endif

@@ -7,8 +7,8 @@ file
 	JpsDataClass.cpp,
 	ParsingJPS.cpp,
 	InitFile.cpp,
-	JpsFiles.cpp,
-	Fucntions.cpp;
+	Fucntions.cpp,
+	JpsFiles.cpp;
 
 mainconfig
 	"" = "";
