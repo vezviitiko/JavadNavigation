@@ -8,6 +8,7 @@ public:
 	double x;
 	double y;
 	double z;
+	
 	double dx;
 	double dy;
 	double dz;
@@ -30,6 +31,28 @@ public:
 	void trueAnomCalc();
 };
 
+class CAlmanac{
+public:
+	// дата
+	int year;
+	int month;
+	int day;
+	double lambda;
+	double Tlambda;
+	double di;
+	double w;
+	double e;
+	double dT;
+	double dTT;
+	double Tcp = 43200;
+	double icp = 63;
+	double ae = 6378.136;			//экваториальный радиус Земли
+	double C = -1082.62575*pow(10,-6);	// коэффициент при второй зональной  гармонике  разложения
+									    // геопотенциала	в ряд по сферическим функциям
+	double ny = 398600.4418;		// константа гравитационного поля Земли
+	double omEarth = 0.7292115*pow(10,-4);  // угловая скорость вращения Земли
+};
+
 class CAnglesRot{
 public:
 	double x;
@@ -50,7 +73,26 @@ public:
 		}
 };
 
+class CDatetime{
+public:
+	int year;
+	int month;
+	int day;
+	int hour;
+	int min;
+	int sec;
+	int micro;
+};
+
+class CDate{
+public:
+	int year;
+	int month;
+	int day;
+};
+
 CCartesian KepToDec(CKeplerian);
+CCartesian ModelAlmDec(CAlmanac);
 CAnglesRot RotVector(CAnglesRot);
 
 #endif
