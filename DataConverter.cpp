@@ -1,5 +1,3 @@
-#ifndef _model_DataConverter_h_
-#define _model_DataConverter_h_
 #include "model.h"
 
 float dateTojd(int year,int month,int day)
@@ -359,5 +357,3 @@ CDatetime jdTodatetime(float jd){
   
 	return datetime;
 }
-
-#endif
