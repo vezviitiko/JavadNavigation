@@ -1,5 +1,5 @@
 #include "model.h"
-#include "cmath"
+//#include "cmath"
 
 CCartesian ModelAlmDec(CAlmanac alm)
 {
@@ -30,31 +30,19 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	
 	// вычисление ближайшего високосного года
 	int year = alm.year;
-	/*
-	if ((year%4!=0) || (year%100!=0))
-	{
-		year = year -1;
-		if ((year%4!=0) || (year%100!=0))
-		{
-			year = year -1;
-			if ((year%4!=0) || (year%100!=0))
-			{
-				year = year -1;
-			}
-		}
-	}*/
-	
-	while ((year%4!=0) || (year%100!=0)){
-		year = year -1;
+
+	while (year%4 ||(year%100==0 && year%400)){
+		year = year - 1;
 	}
-		
 	RDUMP(year);
 	// календарный номер суток внутри четырехлетнего периода от начала ближайшего високосного года
 	
-	float Na = Date(alm.year,alm.month,alm.day) - Date(year,1,1);
+	float Na = Date(alm.yearAlm,alm.monthAlm,alm.dayAlm) - Date(year,1,1);
+	RDUMP(Na);
 	
+	float N0 = Date(alm.year,alm.month,alm.day) - Date(year,1,1);
+	RDUMP(N0);
 	
-	float N0 = dateTojd(alm.year,alm.month,alm.day);
 	
 	float S0 = 0/* истинное звёздное время*/;
 		
@@ -178,5 +166,8 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	car.y = r*(cos(u)*sin(omBig) + sin(u)*cos(omBig)*cos(i));
 	car.z = r*(sin(u)*sin(i));
 	
+	RDUMP(car.x);
+	RDUMP(car.y);
+	RDUMP(car.z);
 	return car;
 }
