@@ -11,23 +11,22 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	double i = alm.icp+alm.di;
 	double Tdr = alm.Tcp + alm.dT;
 	double p, Tock;
-	
-	double a = pow((pow((Tdr/(2*PI)),2)*alm.ny),1/3);
-	
+	double a = (double) pow((double) pow((Tdr/(2.0*PI)),2.0)*alm.ny,1.0/3.0);
+	RDUMP(a);
+	double a1;
 	for (int ix = 0; ix < 3; ix++){
 		
-		p = a*(1-pow(alm.e,2));
+		p = a*(1.0-pow(alm.e,2.0));
+		a1 = a;
+		Tock = Tdr * ( 1.0+(3.0/2.0)*alm.C*pow((alm.ae/p),2.0)*((2.0-(5.0/2.0)*pow(sin(i),2.0))*
+		(pow((1-pow(alm.e,2.0)),(3.0/2.0))/pow((1+alm.e*cos(alm.w)),2.0))
+		+ (pow((1+alm.e*cos(v)),3.0)/(1.0-pow(alm.e,2.0))) ) );
 		
-		Tock = Tdr * ( 1+(3/2)*alm.C*pow((alm.ae/p),2)* ((2-(5/2)*pow(sin(i),2))* pow((1-pow(alm.e,2)),3/2)/pow((1+alm.e*cos(alm.w)),2) + pow((1+alm.e*cos(v)),3)/(1-pow(alm.e,2)) ) );
+		a = pow(pow((Tock/(2.0*PI)),2.0)*alm.ny,(1.0/3.0));
+	}	// реализовано вместо mod(a(3)-a(2))<pow(10,-3) == for (int ix = 0; ix < 3; ix++)
 		
-		a = pow(pow((Tock/(2*PI)),2),1/3)*alm.ny;
-	}	// реализовано вместо mod(a(3)-a(2))<pow(10,-3)
-	
-	RDUMP(a);
-	
 	//2. Рассчёт момента прохождения восходящего узла орбиты на витке,
-	// к которому принадлежит  момент, и долготы восходящего узла на этом витке
-	
+	// к которому принадлежит  момент, и долготы восходящего узла на этом витке	
 	// вычисление ближайшего високосного года
 	int year = alm.year;
 
@@ -36,10 +35,10 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	}
 	RDUMP(year);
 	// календарный номер суток внутри четырехлетнего периода от начала ближайшего високосного года
-	
+	// по альманаху
 	float Na = Date(alm.yearAlm,alm.monthAlm,alm.dayAlm) - Date(year,1,1);
 	RDUMP(Na);
-	
+	// по данным
 	float N0 = Date(alm.year,alm.month,alm.day) - Date(year,1,1);
 	RDUMP(N0);
 	
@@ -47,42 +46,42 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	http://www.astrolib.ru/files/6/Duboshin-Sprav_Ruk_po_Neb_Meh.pdf
 	стр 159
 	*/
-	
-	double d = dateTojd(alm.year,alm.month,alm.day)-2415020;
+	double t = dateTojd(alm.year,alm.month,alm.day);
+	double d = t - 2415020;
 	RDUMP(d);
-	float S0 = 0.276919398+0.00273790926493*d+0.1075231*pow(10,-5)*(d/36525);
+	float S0 = 0.276919398 + 0.00273790926493*d+0.1075231*pow(10.0,-5.0)*(d/36525.0);
 	RDUMP(S0);
 	
-	double t = t - alm.Tlambda + 86400*(N0-Na);
-	RDUMP(t);
-	double Wk = t/Tdr;
+	double tStar = t - alm.Tlambda + 86400.0*(N0-Na);
+	RDUMP(tStar);
+	double Wk = tStar/Tdr;
 	RDUMP(Wk);
 	int W   = (int) Wk;
 	RDUMP(W);
-	double tlk = alm.Tlambda + Tdr * W + alm.dTT * pow(W,2);
+	double tlk = alm.Tlambda + Tdr * W + alm.dTT * pow(W,2.0);
 	RDUMP(tlk);
 	tlk = (int) tlk%86400; // mod
 	RDUMP(tlk);
 	// =====================
 	
-	double n = (2*PI)/Tdr;
+	double n = (2.0*PI)/Tdr;
 	
-	double omBigHatch = (3/2)*alm.C*n*pow((alm.ae/a),2)*cos(i)*pow((1-pow(alm.e,2)),-2);
+	double omBigHatch = (3.0/2.0)*alm.C*n*pow((alm.ae/a),2.0)*cos(i)*pow((1.0-pow(alm.e,2.0)),-2.0);
 	
-	double lk = alm.lambda + (omBigHatch - alm.omEarth)*(Tdr*W+alm.dTT*pow(W,2));
+	double lk = alm.lambda + (omBigHatch - alm.omEarth)*(Tdr*W+alm.dTT*pow(W,2.0));
 	
 	double S = S0 + alm.omEarth*(tlk-10800);
 	
-	double psi = lk + S;
+	double omBig = lk + S;
 	
 	
 	// 3. Вычисление констант интегрирования
 	
-	double J = (-3/2)*alm.C;
+	double J = (-3.0/2.0)*alm.C;
 	double l = alm.e*cos(alm.w);
 	double h = alm.e*sin(alm.w);
 
-	double E = atan(sqrt((1-alm.e)/(1+alm.e))*tan(v/2))/2;
+	double E = 2.0*atan(sqrt((1.0-alm.e)/(1.0+alm.e))*tan(v/2.0));
 	double M = E - alm.e*sin(E);
 	
 	double lambdaHatch = M + alm.w;
@@ -136,22 +135,22 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	l = l + dl;
 	
 	double eps = sqrt(sqr(h)+sqr(l));
-	double omBig;
+	double omMIN;
 	
 	if ((eps != 0) && (eps != 0))
-		omBig = atan(h/l);
+		omMIN = atan(h/l);
 	else if (eps == 0)
-			omBig = 0;
+			omMIN = 0;
 		else if ((eps != 0) && (h == eps))
-				omBig = PI/2;
+				omMIN = PI/2;
 			else if ((eps != 0) && (h == -eps))
-				omBig = -PI/2;
+				omMIN = -PI/2;
 			
 	a = a + da;
 	i = i + di;
 	omBig = omBig + domBig;
 	double lStar = M + alm.w + n*(t-tlk)+dlambda;
-	M = lStar - alm.w;
+	M = lStar - omMIN;
 	
 	//6. Вычисление координат
 	CKeplerian kepTest;
@@ -163,7 +162,7 @@ CCartesian ModelAlmDec(CAlmanac alm)
 
 	E = kepTest.E;
 	
-	v = atan(sqrt((1-eps)/(1+eps))*tan(E/2))/2;
+	v = 2*atan(sqrt((1-eps)/(1+eps))*tan(E/2.0));
 		
 	double u = v + alm.w;
 	
