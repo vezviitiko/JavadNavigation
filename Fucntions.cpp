@@ -19,7 +19,7 @@ String GetBitsStr(string recStr)
 	String iStr;
 	std::string recS = recStr;
 	
-	cout << "\nnew test output\n" << recStr << "\n";
+//	cout << "\nnew test output\n" << recStr << "\n";
 	
 	for (auto p = recS.begin(); p != recS.end(); ++p){
 		char c = *p;

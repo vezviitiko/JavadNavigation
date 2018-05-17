@@ -3,7 +3,7 @@
 
 #include <Core/Core.h>
 #include <fstream>
-
+#include <math.h>
 #include <iostream>
 
 #include "JpsDataClass.h"
@@ -38,7 +38,6 @@ public:
 	int filesCount;
 	void parse();
 };
-
 
 //Дополнительные функции
 String Revert(String);

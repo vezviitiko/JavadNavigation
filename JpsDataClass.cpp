@@ -4,6 +4,26 @@
 //В этом файле собраны конструкторы читалки
 //для разных типов строк и соответствующих им типов данных
 
+IEEE::IEEE(String binStr, int accur){
+	int eLength, qLength;
+	if (accur == 4){eLength = 8; qLength = 23;}
+	if (accur == 8){eLength = 11; qLength = 52;}
+	
+	if (binStr[0] == '0') {sign = 0;} else {sign = 1;}
+	String eStr = "";
+	for (int i = 0; i < eLength; i++){
+		eStr += binStr[i + 1];
+	}
+	String qStr = "";
+	for (int i = 0; i < qLength; i++){
+		qStr += binStr[i + eLength + 1];
+	}
+	
+	expon = BinaryToDecimal(eStr);
+	mantiss = BinaryToDecimal(qStr);
+	value = pow(-1,sign) * pow(2,(expon - pow(2, (eLength - 1)) + 1)) * (1 + mantiss/(pow(2,qLength)));
+}
+
 JpsData::JpsData(String dt, int size, char inStr[])
 {
 	datType = dt;
@@ -89,10 +109,48 @@ SatElevations::SatElevations(String dt, int size, char inStr[], int satNum) : Jp
 	}
 	if (test != "ELTA")
 	{
-		RDUMP(dataLength);
+		//RDUMP(dataLength);
 	}
 }
 
+RTtoRTO::RTtoRTO(String dt, int size, char inStr[]) : JpsData(dt, size, inStr)
+{
+	String ieeeStr = "";
+	String valStr[8];
+	for (int i = 0; i < 8; i++){
+		int count = 0;
+		valStr[i] = "";
+		do{
+			valStr[i] += bynStr[46 + (9 * i) + count];
+			count++;
+		}while(bynStr[46 + (9 * i) + count] != 0);
+	}
+	for (int i = 0; i < 8; i++){
+		ieeeStr += valStr[7 - i];
+	}
+	val = IEEE(ieeeStr, 8);
+	
+	for (int i = 0; i < 8; i++){
+		int count = 0;
+		valStr[i] = "";
+		do{
+			valStr[i] += bynStr[118 + (9 * i) + count];
+			count++;
+		}while (bynStr[118 + (9 * i) + count] != 0);
+	}
+	ieeeStr = "";
+	for (int i = 0; i < 8; i++){
+		ieeeStr += valStr[7 - i];
+	}
+	sval = IEEE(ieeeStr, 8);
+}
+
+GpsToRecTimOff::GpsToRecTimOff(String dt, int size, char inStr[]) : JpsData (dt, size, inStr)
+{
+	
+}
+
+//RTtoRTO(String dt, int size, char inStr[]);
 
 // 48 == 0
 // 49 == 1
