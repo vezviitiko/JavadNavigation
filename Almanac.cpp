@@ -1,5 +1,4 @@
 #include "model.h"
-//#include "cmath"
 
 CCartesian ModelAlmDec(CAlmanac alm)
 {
@@ -11,22 +10,22 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	double i = alm.icp+alm.di;
 	double Tdr = alm.Tcp + alm.dT;
 	double p, Tock;
-	double a = (double) pow((double) pow((Tdr/(2.0*PI)),2.0)*alm.ny,1.0/3.0);
+	double a = (double) pow((double) pow((Tdr/(2.*PI)),2.)*alm.ny,1./3.);
 	RDUMP(a);
 	double a1;
 	for (int ix = 0; ix < 3; ix++){
 		
-		p = a*(1.0-pow(alm.e,2.0));
+		p = a*(1.0-pow(alm.e,2.));
 		a1 = a;
-		Tock = Tdr * ( 1.0+(3.0/2.0)*alm.C*pow((alm.ae/p),2.0)*((2.0-(5.0/2.0)*pow(sin(i),2.0))*
-		(pow((1-pow(alm.e,2.0)),(3.0/2.0))/pow((1+alm.e*cos(alm.w)),2.0))
-		+ (pow((1+alm.e*cos(v)),3.0)/(1.0-pow(alm.e,2.0))) ) );
+		Tock = Tdr * ( 1.+(3./2.)*alm.C*pow((alm.ae/p),2.)*((2.-(5./2.)*pow(sin(i),2.))*
+		(pow((1.-pow(alm.e,2.)),(3./2.))/pow((1+alm.e*cos(alm.w)),2.))
+		+ (pow((1.+alm.e*cos(v)),3.)/(1.-pow(alm.e,2.))) ) );
 		
-		a = pow(pow((Tock/(2.0*PI)),2.0)*alm.ny,(1.0/3.0));
+		a = pow(pow((Tock/(2.*PI)),2.)*alm.ny,(1./3.));
 	}	// реализовано вместо mod(a(3)-a(2))<pow(10,-3) == for (int ix = 0; ix < 3; ix++)
 		
 	//2. Рассчёт момента прохождения восходящего узла орбиты на витке,
-	// к которому принадлежит  момент, и долготы восходящего узла на этом витке	
+	// к которому принадлежит момент, и долготы восходящего узла на этом витке	
 	// вычисление ближайшего високосного года
 	int year = alm.year;
 
@@ -47,12 +46,12 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	стр 159
 	*/
 	double t = dateTojd(alm.year,alm.month,alm.day);
-	double d = t - 2415020;
+	double d = t - 2415020.;
 	RDUMP(d);
-	float S0 = 0.276919398 + 0.00273790926493*d+0.1075231*pow(10.0,-5.0)*(d/36525.0);
+	float S0 = 0.276919398 + 0.00273790926493*d+0.1075231*pow(10.,-5.)*(d/36525.);
 	RDUMP(S0);
 	
-	double tStar = t - alm.Tlambda + 86400.0*(N0-Na);
+	double tStar = t - alm.Tlambda + 86400.*(N0-Na);
 	RDUMP(tStar);
 	double Wk = tStar/Tdr;
 	RDUMP(Wk);
@@ -64,61 +63,106 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	RDUMP(tlk);
 	// =====================
 	
-	double n = (2.0*PI)/Tdr;
+	double n = (2.*PI)/Tdr;
 	
-	double omBigHatch = (3.0/2.0)*alm.C*n*pow((alm.ae/a),2.0)*cos(i)*pow((1.0-pow(alm.e,2.0)),-2.0);
+	double omBigHatch = (3./2.)*alm.C*n*pow((alm.ae/a),2.)*cos(i)*pow((1.-pow(alm.e,2.)),-2.);
 	
-	double lk = alm.lambda + (omBigHatch - alm.omEarth)*(Tdr*W+alm.dTT*pow(W,2.0));
+	double lk = alm.lambda + (omBigHatch - alm.omEarth)*(Tdr*W+alm.dTT*pow(W,2.));
 	
-	double S = S0 + alm.omEarth*(tlk-10800);
+	double S = S0 + alm.omEarth*(tlk-10800.);
 	
 	double omBig = lk + S;
 	
 	
 	// 3. Вычисление констант интегрирования
 	
-	double J = (-3.0/2.0)*alm.C;
+	double J = (-3./2.)*alm.C;
 	double l = alm.e*cos(alm.w);
 	double h = alm.e*sin(alm.w);
 
-	double E = 2.0*atan(sqrt((1.0-alm.e)/(1.0+alm.e))*tan(v/2.0));
+	double E = 2.*atan(sqrt((1.-alm.e)/(1.+alm.e))*tan(v/2.));
 	double M = E - alm.e*sin(E);
 	
 	double lambdaHatch = M + alm.w;
 	
 	// ======================================================
-	double m = 1;
-	double ro = 0;
+	double m = 1.;
+	double ro = 0.;
 	
-	double da_1 = (2*J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(alm.lambda*cos(lambdaHatch)+h*sin(lambdaHatch))+J*pow((alm.ae/a),2)*pow(sin(i),2)*(0.5*h*sin(lambdaHatch)-0.5*l*cos(lambdaHatch)+cos(2*lambdaHatch)+(7/2)*l*cos(3*lambdaHatch)+(7/2)*h*sin(3*lambdaHatch)))/a;
+	double da_1 = (2.*J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				(alm.lambda*cos(lambdaHatch) + h*sin(lambdaHatch)) + J*pow((alm.ae/a),2.)*
+				pow(sin(i),2.)*(0.5*h*sin(lambdaHatch) -
+				0.5*l*cos(lambdaHatch)+cos(2*lambdaHatch) +
+				(7./2.)*l*cos(3.*lambdaHatch)+(7./2.)*h*sin(3.*lambdaHatch)))/a;
 	
-	double dh_1 = J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*( l*n*ro+sin(lambdaHatch)+(3/2)*l*sin(2*lambdaHatch)-(3/2)*h*cos(2*lambdaHatch)) - (1/4)*J*pow((alm.ae/a),2)*pow(sin(i),2)*( sin(lambdaHatch)-(7/3)*sin(3*lambdaHatch)+5*l*sin(2*lambdaHatch)-(17/2)*l*sin(4*lambdaHatch)+(17/2)*h*cos(4*lambdaHatch)+h*cos(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*( l*n*ro-(1/2)*l*sin(2*lambdaHatch));
+	double dh_1 = J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				( l*n*ro+sin(lambdaHatch)+(3./2.)*l*sin(2.*lambdaHatch)-(3./2.)*h*cos(2.*lambdaHatch)) -
+				(1./4.)*J*pow((alm.ae/a),2.)*pow(sin(i),2.)*( sin(lambdaHatch)-(7./3.)*sin(3.*lambdaHatch) +
+				5.*l*sin(2.*lambdaHatch)-(17./2.)*l*sin(4.*lambdaHatch)+(17./2.)*h*cos(4.*lambdaHatch) +
+				h*cos(2.*lambdaHatch)) + J*pow((alm.ae/a),2.)*
+				pow(cos(i),2.) * ( l*n*ro-(1./2.)*l*sin(2.*lambdaHatch));
 	
-	double dl_1 = J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(-h*n*ro+cos(lambdaHatch)+(3/2)*l*cos(2*lambdaHatch)+(3/2)*h*sin(2*lambdaHatch)) - (1/4)*J*pow((alm.ae/a),2)*pow(sin(i),2)*(-cos(lambdaHatch)-(7/3)*sin(3*lambdaHatch)-5*h*sin(2*lambdaHatch)-(17/2)*l*cos(4*lambdaHatch)-(17/2)*h*sin(4*lambdaHatch)+l*cos(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*(-h*n*ro+(1/2)*h*sin(2*lambdaHatch));
+	double dl_1 = J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				(-h*n*ro+cos(lambdaHatch)+(3./2.)*l*cos(2.*lambdaHatch)+(3./2.)*h*sin(2.*lambdaHatch)) -
+				(1./4.)*J*pow((alm.ae/a),2.)*pow(sin(i),2.)*(-cos(lambdaHatch)-(7./3.)*cos(3.*lambdaHatch) -
+				5.*h*sin(2.*lambdaHatch)-(17./2.)*l*cos(4.*lambdaHatch)-(17./2.)*h*sin(4.*lambdaHatch) +
+				l*cos(2.*lambdaHatch)) + J*pow((alm.ae/a),2.)*pow(cos(i),2.) *
+				(-h*n*ro+(1./2.)*h*sin(2.*lambdaHatch));
 	
-	double domBig_1 = -J*pow((alm.ae/a),2)*cos(i)*(n*ro+(7/2)*l*sin(lambdaHatch)-(5/2)*h*cos(lambdaHatch)-(1/2)*sin(2*lambdaHatch)-(7/6)*l*sin(3*lambdaHatch)+(7/6)*h*cos(3*lambdaHatch));
+	double domBig_1 = -J*pow((alm.ae/a),2.)*cos(i)*(n*ro+(7./2.)*l*sin(lambdaHatch) -
+				(5./2.)*h*cos(lambdaHatch) - (1./2.)*sin(2.*lambdaHatch) -
+				(7./6.)*l*sin(3.*lambdaHatch) + (7./6.)*h*cos(3.*lambdaHatch));
 	
-	double di_1 = (1/2)*J*pow((alm.ae/a),2)*sin(i)*cos(i)*(-l*cos(lambdaHatch)+h*sin(lambdaHatch)+cos(2*lambdaHatch)+(7/3)*l*cos(3*lambdaHatch)+(7/3)*h*sin(3*lambdaHatch));
+	double di_1 = (1./2.)*J*pow((alm.ae/a),2.)*sin(i)*cos(i)*(-l*cos(lambdaHatch) +
+				h*sin(lambdaHatch) + cos(2.*lambdaHatch) +
+				(7./3.)*l*cos(3.*lambdaHatch) + (7./3.)*h*sin(3.*lambdaHatch));
 	
-	double dlambda_1 = 2*J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(n*ro+(7/4)*l*sin(lambdaHatch)-(7/4)*h*cos(2*lambdaHatch))+3*J*pow((alm.ae/a),2)*pow((sin(i)),2)*((-7/24)*h*cos(lambdaHatch)-(7/24)*l*sin(lambdaHatch)-(49/72)*l*sin(3*lambdaHatch)+(1/4)*sin(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*(n*ro+(7/2)*l*sin(lambdaHatch)-(5/2)*h*cos(lambdaHatch)-(1/2)*sin(2*lambdaHatch)-(7/6)*l*sin(3*lambdaHatch)+(7/6)*h*cos(3*lambdaHatch));
+	double dlambda_1 = 2.*J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*(n*ro+(7./4.)*l*sin(lambdaHatch) -
+				(7./4.)*h*cos(2.*lambdaHatch)) + 3.*J*pow((alm.ae/a),2.)*pow((sin(i)),2.)*
+				((-7./24.)*h*cos(lambdaHatch) - (7./24.)*l*sin(lambdaHatch) -
+				(49./72.)*h*cos(3.*lambdaHatch) + (49./72.)*l*sin(3.*lambdaHatch) + (1./4.)*sin(2.*lambdaHatch)) +
+				J*pow((alm.ae/a),2.)*pow(cos(i),2.)*(n*ro+(7./2.)*l*sin(lambdaHatch)-(5./2.)*h*cos(lambdaHatch) -
+				(1./2.)*sin(2.*lambdaHatch)-(7./6.)*l*sin(3.*lambdaHatch)+(7./6.)*h*cos(3.*lambdaHatch));
 	
 	// ======================================================
 	m = 2;
 	ro = t - tlk;
 	lambdaHatch = M + alm.w + n*ro;
 	
-	double da_2 = (2*J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(alm.lambda*cos(lambdaHatch)+h*sin(lambdaHatch))+J*pow((alm.ae/a),2)*pow(sin(i),2)*(0.5*h*sin(lambdaHatch)-0.5*l*cos(lambdaHatch)+cos(2*lambdaHatch)+(7/2)*l*cos(3*lambdaHatch)+(7/2)*h*sin(3*lambdaHatch)))/a;
+	double da_2 = (2.*J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				(alm.lambda*cos(lambdaHatch) + h*sin(lambdaHatch)) + J*pow((alm.ae/a),2.)*
+				pow(sin(i),2.)*(0.5*h*sin(lambdaHatch) -
+				0.5*l*cos(lambdaHatch)+cos(2*lambdaHatch) +
+				(7./2.)*l*cos(3.*lambdaHatch)+(7./2.)*h*sin(3.*lambdaHatch)))/a;
 	
-	double dh_2 = J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*( l*n*ro+sin(lambdaHatch)+(3/2)*l*sin(2*lambdaHatch)-(3/2)*h*cos(2*lambdaHatch)) - (1/4)*J*pow((alm.ae/a),2)*pow(sin(i),2)*( sin(lambdaHatch)-(7/3)*sin(3*lambdaHatch)+5*l*sin(2*lambdaHatch)-(17/2)*l*sin(4*lambdaHatch)+(17/2)*h*cos(4*lambdaHatch)+h*cos(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*( l*n*ro-(1/2)*l*sin(2*lambdaHatch));
+	double dh_2 = J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				( l*n*ro+sin(lambdaHatch)+(3./2.)*l*sin(2.*lambdaHatch)-(3./2.)*h*cos(2.*lambdaHatch)) -
+				(1./4.)*J*pow((alm.ae/a),2.)*pow(sin(i),2.)*( sin(lambdaHatch)-(7./3.)*sin(3.*lambdaHatch) +
+				5.*l*sin(2.*lambdaHatch)-(17./2.)*l*sin(4.*lambdaHatch)+(17./2.)*h*cos(4.*lambdaHatch) +
+				h*cos(2.*lambdaHatch)) + J*pow((alm.ae/a),2.)*
+				pow(cos(i),2.) * ( l*n*ro-(1./2.)*l*sin(2.*lambdaHatch));
 	
-	double dl_2 = J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(-h*n*ro+cos(lambdaHatch)+(3/2)*l*cos(2*lambdaHatch)+(3/2)*h*sin(2*lambdaHatch)) - (1/4)*J*pow((alm.ae/a),2)*pow(sin(i),2)*(-cos(lambdaHatch)-(7/3)*sin(3*lambdaHatch)-5*h*sin(2*lambdaHatch)-(17/2)*l*cos(4*lambdaHatch)-(17/2)*h*sin(4*lambdaHatch)+l*cos(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*(-h*n*ro+(1/2)*h*sin(2*lambdaHatch));
+	double dl_2 = J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
+				(-h*n*ro+cos(lambdaHatch)+(3./2.)*l*cos(2.*lambdaHatch)+(3./2.)*h*sin(2.*lambdaHatch)) -
+				(1./4.)*J*pow((alm.ae/a),2.)*pow(sin(i),2.)*(-cos(lambdaHatch)-(7./3.)*cos(3.*lambdaHatch) -
+				5.*h*sin(2.*lambdaHatch)-(17./2.)*l*cos(4.*lambdaHatch)-(17./2.)*h*sin(4.*lambdaHatch) +
+				l*cos(2.*lambdaHatch)) + J*pow((alm.ae/a),2.)*pow(cos(i),2.) *
+				(-h*n*ro+(1./2.)*h*sin(2.*lambdaHatch));
 	
-	double domBig_2 = -J*pow((alm.ae/a),2)*cos(i)*(n*ro+(7/2)*l*sin(lambdaHatch)-(5/2)*h*cos(lambdaHatch)-(1/2)*sin(2*lambdaHatch)-(7/6)*l*sin(3*lambdaHatch)+(7/6)*h*cos(3*lambdaHatch));
+	double domBig_2 = -J*pow((alm.ae/a),2.)*cos(i)*(n*ro+(7./2.)*l*sin(lambdaHatch) -
+				(5./2.)*h*cos(lambdaHatch) - (1./2.)*sin(2.*lambdaHatch) -
+				(7./6.)*l*sin(3.*lambdaHatch) + (7./6.)*h*cos(3.*lambdaHatch));
 	
-	double di_2 = (1/2)*J*pow((alm.ae/a),2)*sin(i)*cos(i)*(-l*cos(lambdaHatch)+h*sin(lambdaHatch)+cos(2*lambdaHatch)+(7/3)*l*cos(3*lambdaHatch)+(7/3)*h*sin(3*lambdaHatch));
+	double di_2 = (1./2.)*J*pow((alm.ae/a),2.)*sin(i)*cos(i)*(-l*cos(lambdaHatch) +
+				h*sin(lambdaHatch) + cos(2.*lambdaHatch) +
+				(7./3.)*l*cos(3.*lambdaHatch) + (7./3.)*h*sin(3.*lambdaHatch));
 	
-	double dlambda_2 = 2*J*pow((alm.ae/a),2)*(1-(3/2)*pow((sin(i)),2))*(n*ro+(7/4)*l*sin(lambdaHatch)-(7/4)*h*cos(2*lambdaHatch))+3*J*pow((alm.ae/a),2)*pow((sin(i)),2)*((-7/24)*h*cos(lambdaHatch)-(7/24)*l*sin(lambdaHatch)-(49/72)*l*sin(3*lambdaHatch)+(1/4)*sin(2*lambdaHatch))+J*pow((alm.ae/a),2)*pow(cos(i),2)*(n*ro+(7/2)*l*sin(lambdaHatch)-(5/2)*h*cos(lambdaHatch)-(1/2)*sin(2*lambdaHatch)-(7/6)*l*sin(3*lambdaHatch)+(7/6)*h*cos(3*lambdaHatch));
-	
+	double dlambda_2 = 2.*J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*(n*ro+(7./4.)*l*sin(lambdaHatch) -
+				(7./4.)*h*cos(2.*lambdaHatch)) + 3.*J*pow((alm.ae/a),2.)*pow((sin(i)),2.)*
+				((-7./24.)*h*cos(lambdaHatch) - (7./24.)*l*sin(lambdaHatch) -
+				(49./72.)*h*cos(3.*lambdaHatch) + (49./72.)*l*sin(3.*lambdaHatch) + (1./4.)*sin(2.*lambdaHatch)) +
+				J*pow((alm.ae/a),2.)*pow(cos(i),2.)*(n*ro+(7./2.)*l*sin(lambdaHatch)-(5./2.)*h*cos(lambdaHatch) -
+				(1./2.)*sin(2.*lambdaHatch)-(7./6.)*l*sin(3.*lambdaHatch)+(7./6.)*h*cos(3.*lambdaHatch));
 	
 	//4. Вычисление поправок к элементам орбиты НКА
 	
@@ -142,9 +186,9 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	else if (eps == 0)
 			omMIN = 0;
 		else if ((eps != 0) && (h == eps))
-				omMIN = PI/2;
+				omMIN = PI/2.;
 			else if ((eps != 0) && (h == -eps))
-				omMIN = -PI/2;
+				omMIN = -PI/2.;
 			
 	a = a + da;
 	i = i + di;
@@ -162,7 +206,7 @@ CCartesian ModelAlmDec(CAlmanac alm)
 
 	E = kepTest.E;
 	
-	v = 2*atan(sqrt((1-eps)/(1+eps))*tan(E/2.0));
+	v = 2.*atan(sqrt((1.-eps)/(1.+eps))*tan(E/2.));
 		
 	double u = v + alm.w;
 	
