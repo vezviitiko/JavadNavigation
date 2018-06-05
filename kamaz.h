@@ -27,6 +27,7 @@ CDate jdTodate(float jd);
 CDatetime jdTodatetime(float jd);
 float hmsmTodays(int hour, int min,int sec, int micro);
 CDatetime daysTohmsm(float days);
-
+double RadEarthLat(double lat);
+double DegreesToRad(double in);
 
 #endif
