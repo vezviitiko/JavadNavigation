@@ -108,17 +108,5 @@ CCartesian SphCoordToDec(CSpherical sph)
 	RDUMP(car.x);
 	RDUMP(car.y);
 	RDUMP(car.z);
-	
-	// перевод в геоцентрическую инерциальную
-	CAnglesRot ang(car.x,car.y,car.z,sph.i,sph.omBig,sph.omMin);
-	ang = RotVector(ang);
-	
-	car.x = ang.x;
-	car.y = ang.y;
-	car.z = ang.z;
-	
-	RDUMP(car.x);
-	RDUMP(car.y);
-	RDUMP(car.z);
 	return car;
 }
