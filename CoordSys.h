@@ -35,11 +35,6 @@ class CSpherical{
 public:
 	double lon; // longitude
 	double lat; // latitude
-	double radEarth = 6371302.0; // радиус Земли - метр
-	// углы поворота
-	double i;
-	double omBig;
-	double omMin;
 };
 
 class CAlmanac{
