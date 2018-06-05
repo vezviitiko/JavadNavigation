@@ -1,4 +1,4 @@
-#include "model.h"
+#include "kamaz.h"
 
 CCartesian ModelAlmDec(CAlmanac alm)
 {
