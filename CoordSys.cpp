@@ -32,7 +32,7 @@ void CKeplerian::trueAnomCalc()
 
 double RadEarthLat(double lat)
 {
-	double a = 6378137.0;    // BigSemiaxis м
+	double a = 6378137.;    // BigSemiaxis м
 	double b = 6356752.3142; // SmallSemiaxis м
 	
 	// перевод градусов в радианы
