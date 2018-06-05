@@ -98,11 +98,12 @@ CAnglesRot RotVector(CAnglesRot ang)
 CCartesian SphCoordToDec(CSpherical sph)
 {
 	CCartesian car;
-	// перевод в геоцентрическую не инерциальную
 	
-	car.z = sph.radEarth*cos(sph.lat);
-	car.y = sph.radEarth*sin(sph.lat);
-	car.x = sph.radEarth*sin(sph.lon);
+	double radEarth = RadEarthLat(sph.lat);
+	
+	car.z = radEarth*cos(sph.lat);
+	car.y = radEarth*sin(sph.lat);
+	car.x = radEarth*sin(sph.lon);
 	
 	RDUMP("========================");
 	RDUMP(car.x);
