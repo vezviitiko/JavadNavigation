@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 #include "model.h"
-=======
-#include "kamaz.h"
->>>>>>> pr/51
 
 CCartesian KepToDec(CKeplerian kep)
 {
@@ -47,15 +43,9 @@ CCartesian KepToDec(CKeplerian kep)
 CAnglesRot RotVector(CAnglesRot ang)
 {
 	// матрица поворота
-<<<<<<< HEAD
 	double **arrRotMat = new double* [3]; 
     	for (int count = 0; count < 3; count++)
     		arrRotMat[count] = new double [3];
-=======
-	double **arrRotMat = new double* [3];
-		for (int count = 0; count < 3; count++)
-			arrRotMat[count] = new double [3];
->>>>>>> pr/51
 
 	arrRotMat[0][0] = cos(ang.fi)*cos(ang.psi)-sin(ang.fi)*sin(ang.psi)*cos(ang.teta);
 	arrRotMat[1][0] = -sin(ang.fi)*cos(ang.psi)-cos(ang.fi)*sin(ang.psi)*cos(ang.teta);
@@ -101,31 +91,9 @@ CAnglesRot RotVector(CAnglesRot ang)
 	for (int count = 0; count < 3; count++)
        delete [] arrRotMat[count];
 	delete [] arrRotMat;
-<<<<<<< HEAD
 	   
 	RDUMP(ang.x);
 	RDUMP(ang.y);
 	RDUMP(ang.z);
 	return ang;
 }
-=======
-
-	return ang;
-}
-
-CCartesian SphCoordToDec(CSpherical sph)
-{
-	CCartesian car;
-	// перевод в геоцентрическую не инерциальную
-	
-	car.z = sph.radEarth*cos(sph.lat);
-	car.y = sph.radEarth*sin(sph.lat);
-	car.x = sph.radEarth*sin(sph.lon);
-	
-	RDUMP("========================");
-	RDUMP(car.x);
-	RDUMP(car.y);
-	RDUMP(car.z);
-	return car;
-}
->>>>>>> pr/51
