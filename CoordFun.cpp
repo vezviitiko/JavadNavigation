@@ -64,12 +64,12 @@ CAnglesRot RotVector(CAnglesRot ang)
 	inVector[1] = ang.y;
 	inVector[2] = ang.z;
 		
-	LOG("---- матрица поворота ----");
+	/*LOG("---- матрица поворота ----");
 	for(int i=0; i<3; i++)
 	{
 		for(int j=0; j<3; j++)
 			RDUMP(arrRotMat[i][j]);
-	}
+	}*/
 	
 	double *outVector = new double[3];
 	for(int i=0; i<3; i++)
@@ -111,3 +111,5 @@ CCartesian SphCoordToDec(CSpherical sph)
 	RDUMP(car.z);
 	return car;
 }
+
+
