@@ -1,4 +1,4 @@
-#include "model.h"
+#include "kamaz.h"
 
 CCartesian KepToDec(CKeplerian kep)
 {
@@ -91,9 +91,34 @@ CAnglesRot RotVector(CAnglesRot ang)
 	for (int count = 0; count < 3; count++)
        delete [] arrRotMat[count];
 	delete [] arrRotMat;
-	   
-	RDUMP(ang.x);
-	RDUMP(ang.y);
-	RDUMP(ang.z);
+
 	return ang;
+}
+
+CCartesian SphCoordToDec(CSpherical sph)
+{
+	CCartesian car;
+	// перевод в геоцентрическую не инерциальную
+	
+	car.z = sph.radEarth*cos(sph.lat);
+	car.y = sph.radEarth*sin(sph.lat);
+	car.x = sph.radEarth*sin(sph.lon);
+	
+	RDUMP("========================");
+	RDUMP(car.x);
+	RDUMP(car.y);
+	RDUMP(car.z);
+	
+	// перевод в геоцентрическую инерциальную
+	CAnglesRot ang(car.x,car.y,car.z,sph.i,sph.omBig,sph.omMin);
+	ang = RotVector(ang);
+	
+	car.x = ang.x;
+	car.y = ang.y;
+	car.z = ang.z;
+	
+	RDUMP(car.x);
+	RDUMP(car.y);
+	RDUMP(car.z);
+	return car;
 }
