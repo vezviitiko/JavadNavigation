@@ -31,6 +31,17 @@ public:
 	void trueAnomCalc();
 };
 
+class CSpherical{
+public:
+	double lon; // longitude
+	double lat; // latitude
+	double radEarth = 6371302.0; // радиус Земли - метр
+	// углы поворота
+	double i;
+	double omBig;
+	double omMin;
+};
+
 class CAlmanac{
 public:
 	// дата
@@ -90,12 +101,26 @@ public:
 class CDate{
 public:
 	int year;
-	int month;
+	int month; 
 	int day;
+};
+
+class testAa{
+public:
+	double x;
+private:
+	double y;
+};
+
+class testBb : testAa
+{
+public:
+	double z;
 };
 
 CCartesian KepToDec(CKeplerian);
 CCartesian ModelAlmDec(CAlmanac);
 CAnglesRot RotVector(CAnglesRot);
+CCartesian SphCoordToDec(CSpherical);
 
 #endif
