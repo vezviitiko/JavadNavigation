@@ -79,4 +79,5 @@ CONSOLE_APP_MAIN
 	sph.lon = 37.8090947;
 	// на вход подаются градусы в DM
 	car = SphCoordToDec(sph);
+	
 }
