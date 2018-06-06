@@ -74,12 +74,13 @@ CONSOLE_APP_MAIN
 	// формирование координат относитьльно Спутниковой тарелки
 	sph.lat = 55.9121311;
 	sph.lon = 37.8090947;
+	
 	// на вход подаются градусы в DM
 	car = SphCoordToDec(sph);
 	
 	PostgreSQLTest dlg;
 	if(dlg.OpenDB())
-    	{
+    {
 		LOG("start DB");
-    	}
+    }
 }
