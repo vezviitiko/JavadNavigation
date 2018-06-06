@@ -1,7 +1,10 @@
 #ifndef _model_CoordSys_h_
 #define _model_CoordSys_h_
 
+#include <Core/Core.h>
 #include "cmath"
+
+using namespace Upp;
 
 class CCartesian{
 public:
@@ -96,7 +99,7 @@ public:
 class CDate{
 public:
 	int year;
-	int month; 
+	int month;
 	int day;
 };
 
@@ -117,5 +120,7 @@ CCartesian KepToDec(CKeplerian);
 CCartesian ModelAlmDec(CAlmanac);
 CAnglesRot RotVector(CAnglesRot);
 CCartesian SphCoordToDec(CSpherical);
+double RadEarthLat(double lat);
+double DegreesToRad(double in);
 
 #endif
