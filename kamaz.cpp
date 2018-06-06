@@ -1,8 +1,5 @@
 #include "kamaz.h"
 
-#include <PostgreSQL/PostgreSQL.h>
-
-
 CONSOLE_APP_MAIN
 {
 	LOG("Hello world");
@@ -80,4 +77,9 @@ CONSOLE_APP_MAIN
 	// на вход подаются градусы в DM
 	car = SphCoordToDec(sph);
 	
+	PostgreSQLTest dlg;
+	if(dlg.OpenDB())
+    	{
+		LOG("start DB");
+    	}
 }
