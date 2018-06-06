@@ -1,4 +1,4 @@
-#include "model.h"
+#include "kamaz.h"
 
 float dateTojd(int year,int month,int day)
 {
