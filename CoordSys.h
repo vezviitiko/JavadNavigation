@@ -85,37 +85,6 @@ public:
 		}
 };
 
-class CDatetime{
-public:
-	int year;
-	int month;
-	int day;
-	int hour;
-	int min;
-	int sec;
-	int micro;
-};
-
-class CDate{
-public:
-	int year;
-	int month;
-	int day;
-};
-
-class testAa{
-public:
-	double x;
-private:
-	double y;
-};
-
-class testBb : testAa
-{
-public:
-	double z;
-};
-
 CCartesian KepToDec(CKeplerian);
 CCartesian ModelAlmDec(CAlmanac);
 CAnglesRot RotVector(CAnglesRot);
