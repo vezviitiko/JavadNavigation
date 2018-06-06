@@ -1,6 +1,7 @@
 #ifndef _kamaz_Postgres_h
 #define _kamaz_Postgres_h
 
+#include <Core/Core.h>
 using namespace Upp;
 
 #include <PostgreSQL/PostgreSQL.h>
@@ -12,6 +13,5 @@ public:
 protected:
     PostgreSQLSession m_session;
 };
-
 
 #endif
