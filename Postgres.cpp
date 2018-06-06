@@ -1,10 +1,11 @@
-#include "kamaz.h"
+#include <Core/Core.h>
+#include "Postgres.h"
 
 bool PostgreSQLTest::OpenDB()
 {
     if(!m_session.Open("host=172.16.49.171 dbname=puma user=comis password=1234"))
     {
-        //Exclamation(Format("Error in open: %s", DeQtf(m_session.GetLastError())));
+        LOG(Format("Error in open: %s", m_session.GetLastError()));
         return false;
     }
 
