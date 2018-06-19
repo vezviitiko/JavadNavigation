@@ -1,4 +1,5 @@
-#include "kamaz.h"
+#include "CoordSys.h"
+#include "DataConverter.h"
 
 CCartesian ModelAlmDec(CAlmanac alm)
 {
@@ -10,8 +11,7 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	double i = alm.icp+alm.di;
 	double Tdr = alm.Tcp + alm.dT;
 	double p, Tock;
-	double a = (double) pow((double) pow((Tdr/(2.*PI)),2.)*alm.ny,1./3.);
-	RDUMP(a);
+	double a = (double) pow((double) pow((Tdr/(2.*M_PI)),2.)*alm.ny,1./3.);
 	double a1;
 	for (int ix = 0; ix < 3; ix++){
 		
@@ -21,7 +21,7 @@ CCartesian ModelAlmDec(CAlmanac alm)
 		(pow((1.-pow(alm.e,2.)),(3./2.))/pow((1+alm.e*cos(alm.w)),2.))
 		+ (pow((1.+alm.e*cos(v)),3.)/(1.-pow(alm.e,2.))) ) );
 		
-		a = pow(pow((Tock/(2.*PI)),2.)*alm.ny,(1./3.));
+		a = pow(pow((Tock/(2.*M_PI)),2.)*alm.ny,(1./3.));
 	}	// реализовано вместо mod(a(3)-a(2))<pow(10,-3) == for (int ix = 0; ix < 3; ix++)
 		
 	//2. Рассчёт момента прохождения восходящего узла орбиты на витке,
@@ -61,9 +61,8 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	RDUMP(tlk);
 	tlk = (int) tlk%86400; // mod
 	RDUMP(tlk);
-	// =====================
 	
-	double n = (2.*PI)/Tdr;
+	double n = (2.*M_PI)/Tdr;
 	
 	double omBigHatch = (3./2.)*alm.C*n*pow((alm.ae/a),2.)*cos(i)*pow((1.-pow(alm.e,2.)),-2.);
 	
@@ -85,8 +84,6 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	
 	double lambdaHatch = M + alm.w;
 	
-	// ======================================================
-	double m = 1.;
 	double ro = 0.;
 	
 	double da_1 = (2.*J*pow((alm.ae/a),2.)*(1.-(3./2.)*pow((sin(i)),2.))*
@@ -125,7 +122,6 @@ CCartesian ModelAlmDec(CAlmanac alm)
 				(1./2.)*sin(2.*lambdaHatch)-(7./6.)*l*sin(3.*lambdaHatch)+(7./6.)*h*cos(3.*lambdaHatch));
 	
 	// ======================================================
-	m = 2;
 	ro = t - tlk;
 	lambdaHatch = M + alm.w + n*ro;
 	
@@ -186,9 +182,9 @@ CCartesian ModelAlmDec(CAlmanac alm)
 	else if (eps == 0)
 			omMIN = 0;
 		else if ((eps != 0) && (h == eps))
-				omMIN = PI/2.;
+				omMIN = M_PI/2.;
 			else if ((eps != 0) && (h == -eps))
-				omMIN = -PI/2.;
+				omMIN = -M_PI/2.;
 			
 	a = a + da;
 	i = i + di;
