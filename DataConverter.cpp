@@ -1,6 +1,6 @@
 #include "DataConverter.h"
 
-float dateTojd(int year,int month,int day)
+double dateTojd(int year,int month,double day)
 {
 	/*
     Convert a date to Julian Day.
@@ -17,12 +17,12 @@ float dateTojd(int year,int month,int day)
     month : int
         Month as integer, Jan = 1, Feb. = 2, etc.
     
-    day : float
+    day : double
         Day, may contain fractional part.
     
     Returns
     -------
-    jd : float
+    jd : double
         Julian Day
         
     Examples
@@ -67,41 +67,41 @@ float dateTojd(int year,int month,int day)
     }
     D = (int) (30.6001 * (monthp + 1));
     
-    float jd = B + C + D + day + 1720994.5;
+    double jd = B + C + D + day + 1720994.5;
     
 	return jd;
 }
 
-float jdTomjd(float jd){
+double jdTomjd(double jd){
     /*
     Convert Julian Day to Modified Julian Day
     
     Parameters
     ----------
-    jd : float
+    jd : double
         Julian Day
         
     Returns
     -------
-    mjd : float
+    mjd : double
         Modified Julian Day
     
     */
 	return jd - 2400000.5;
 }
 
-float mjdTojd(float mjd){
+double mjdTojd(double mjd){
     /*
     Convert Modified Julian Day to Julian Day.
         
     Parameters
     ----------
-    mjd : float
+    mjd : double
         Modified Julian Day
         
     Returns
     -------
-    jd : float
+    jd : double
         Julian Day
     
         
@@ -109,7 +109,7 @@ float mjdTojd(float mjd){
 	return mjd + 2400000.5;
 }
 
-float hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
+double hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
     /*
     Convert hours, minutes, seconds, and microseconds to fractional days.
     
@@ -129,7 +129,7 @@ float hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
         
     Returns
     -------
-    days : float
+    days : double
         Fractional days.
         
     Examples
@@ -138,7 +138,7 @@ float hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
     0.25
     
     */
-    float days;
+    double days;
     
     days = sec + (micro / 1.e6);
     
@@ -149,14 +149,14 @@ float hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
 	return days / 24.;
 }
 
-CDatetime daysTohmsm(float days){
+CDatetime daysTohmsm(double days){
     /*
     Convert fractional days to hours, minutes, seconds, and microseconds.
     Precision beyond microseconds is rounded to the nearest microsecond.
     
     Parameters
     ----------
-    days : float
+    days : double
         A fractional number of days. Must be less than 1.
         
     Returns
@@ -206,7 +206,7 @@ CDatetime daysTohmsm(float days){
 	return datetime;
 }
 
-float datetimeTojd(CDatetime datetime){
+double datetimeTojd(CDatetime datetime){
     /*
     Convert a `datetime.datetime` object to Julian Day.
     
@@ -216,7 +216,7 @@ float datetimeTojd(CDatetime datetime){
     
     Returns
     -------
-    jd : float
+    jd : double
         Julian day.
         
     Examples
@@ -229,14 +229,14 @@ float datetimeTojd(CDatetime datetime){
     
     */
     
-    float days = datetime.day + hmsmTodays(datetime.hour,datetime.min,datetime.sec,datetime.micro);
+    double days = datetime.day + hmsmTodays(datetime.hour,datetime.min,datetime.sec,datetime.micro);
     
-    float jd = dateTojd(datetime.year, datetime.month, days);
-    
+    double jd = dateTojd(datetime.year, datetime.month, days);
+
 	return jd;
 }
 
-CDate jdTodate(float jd){
+CDate jdTodate(double jd){
     /*
     Convert Julian Day to date.
     
@@ -245,7 +245,7 @@ CDate jdTodate(float jd){
     
     Parameters
     ----------
-    jd : float
+    jd : double
         Julian Day
         
     Returns
@@ -257,7 +257,7 @@ CDate jdTodate(float jd){
     month : int
         Month as integer, Jan = 1, Feb. = 2, etc.
     
-    day : float
+    day : double
         Day, may contain fractional part.
         
     Examples
@@ -318,13 +318,13 @@ CDate jdTodate(float jd){
 	return date;
 }
 
-CDatetime jdTodatetime(float jd){
+CDatetime jdTodatetime(double jd){
     /*
     Convert a Julian Day to an `jdutil.datetime` object.
     
     Parameters
     ----------
-    jd : float
+    jd : double
         Julian day.
         
     Returns
