@@ -21,13 +21,13 @@ public:
 	int day;
 };
 
-float dateTojd(int year,int month, int day);
-float jdTomjd(float jd);
-float mjdTojd(float mjd);
-float datetimeTojd(CDatetime);
-CDate jdTodate(float jd);
-CDatetime jdTodatetime(float jd);
-float hmsmTodays(int hour, int min,int sec, int micro);
-CDatetime daysTohmsm(float days);
+double dateTojd(int year,int month, double day);
+double jdTomjd(double jd);
+double mjdTojd(double mjd);
+double datetimeTojd(CDatetime);
+CDate jdTodate(double jd);
+CDatetime jdTodatetime(double jd);
+double hmsmTodays(int hour, int min,int sec, int micro);
+CDatetime daysTohmsm(double days);
 
 #endif
