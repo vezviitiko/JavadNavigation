@@ -36,8 +36,25 @@ public:
 
 class CSpherical{
 public:
-	double lon; // longitude
-	double lat; // latitude
+
+	double lon; // longitude - долгота
+	double lat; // latitude  - широта
+	double hgt; // height    - высота
+	
+	
+	double a = 6378137.;    	// BigSemiaxis м
+	double b = 6356752.3142;	// SmallSemiaxis м
+	double alph = 298.257223563;	// ellipsoid compression
+	double e2 = 0.00669437999014; // первый эксцентриситет
+	double e12 = 0.0067394967422751; // второй эксцентриситет
+	double c = 6399593.62580398; //полярный радиус кривизны поверхности
+	CSpherical () {}
+	CSpherical(double slat, double slon, double shgt)
+	{
+		lat = slat;
+		lon = slon;
+		hgt = shgt;
+	}
 };
 
 class CAlmanac{
@@ -89,7 +106,9 @@ CCartesian KepToDec(CKeplerian);
 CCartesian ModelAlmDec(CAlmanac);
 CAnglesRot RotVector(CAnglesRot);
 CCartesian SphCoordToDec(CSpherical);
+CSpherical DecToSphCoord(CCartesian car);
 double RadEarthLat(double lat);
 double DegreesToRad(double in);
+double RadToDegrees(double in);
 
 #endif
