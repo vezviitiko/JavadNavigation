@@ -27,11 +27,13 @@ CONSOLE_APP_MAIN
 	*/
 	
 	// формирование начальных значений
-	CKeplerian kep; // Создание объекта класса
+	/*CKeplerian kep; // Создание объекта класса
+	*/
 	CCartesian car;
 	CAlmanac   alm;
-	CSpherical sph;
 	
+	CSpherical sph;
+	/*
 	
 	// ФОРМИРОВАНИЕ ЗНАЧЕНИЕ ИЗ НАВ.ФАЙЛА
 	kep.e = 0.760033272672*pow(10,-2);				// ЭКСЦЕНТРИСИТЕТ
@@ -70,17 +72,51 @@ CONSOLE_APP_MAIN
 		
 	// формирование декартовых координат по Альманаху
 	car = ModelAlmDec(alm);
-	
+	*/
 	// формирование координат относитьльно Спутниковой тарелки
-	sph.lat = 55.9121311;
-	sph.lon = 37.8090947;
+	double lat = 55.9121311;
+	double lon = 37.8090947;
+	double hgt = 160.;
+	RDUMP("++++++++++++++++++++");
+	RDUMP(lat);
+	RDUMP(lon);
+	RDUMP(hgt);
+	car = SphCoordToDec(CSpherical(lat, lon , hgt));
+
+	sph = DecToSphCoord(car);
 	
-	// на вход подаются градусы в DM
-	car = SphCoordToDec(sph);
-	
-	PostgreSQLTest dlg;
+	/*PostgreSQLTest dlg;
 	if(dlg.OpenDB())
     {
 		LOG("start DB");
-    }
+    }*/
+    /*
+    CDatetime datetime;
+    datetime.year = 2018;
+    datetime.month = 8;
+    datetime.day = 1;
+    datetime.hour = 0;
+    datetime.min = 0;
+    datetime.sec = 0;
+    
+    RDUMP(datetimeTojd(datetime));
+    
+    datetime.year = 2018;
+    datetime.month = 8;
+    datetime.day = 1;
+    datetime.hour = 2;
+    datetime.min = 30;
+    datetime.sec = 0;
+    
+    RDUMP(datetimeTojd(datetime));
+    
+    datetime.year = 2018;
+    datetime.month = 8;
+    datetime.day = 1;
+    datetime.hour = 10;
+    datetime.min = 0;
+    datetime.sec = 0;
+    
+    RDUMP(datetimeTojd(datetime));
+    */
 }
