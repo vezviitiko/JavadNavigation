@@ -20,7 +20,7 @@ void CKeplerian::exAnomCalc()
 
 void CKeplerian::trueAnomCalc()
 {
-	double at2Sin = (sqrt(1.0 - sqr(e))*sin(E))/(1.0 - e*cos(E));
+	double at2Sin = (sqrt(1. - sqr(e))*sin(E))/(1.0 - e*cos(E));
 	double at2Cos = ((cos(E)- e)/(1.0 - e*cos(E)));
 	
 	v = atan2(at2Sin, at2Cos);
@@ -43,6 +43,11 @@ double RadEarthLat(double lat)
 double DegreesToRad(double in)
 {
 	return in*M_PI/180.;
+}
+// Функция перевода радиан в градусы
+double RadToDegrees(double in)
+{
+	return in*180./M_PI;
 }
 
 CCartesian KepToDec(CKeplerian kep)
@@ -137,15 +142,81 @@ CCartesian SphCoordToDec(CSpherical sph)
 {
 	CCartesian car;
 	
-	double radEarth = RadEarthLat(sph.lat);
-	
-	car.z = radEarth*cos(sph.lat);
-	car.y = radEarth*sin(sph.lat);
-	car.x = radEarth*sin(sph.lon);
+	sph.lat = DegreesToRad(sph.lat);
+	sph.lon = DegreesToRad(sph.lon);
+
+	double cos_lat = cos(sph.lat);
+    double n = sph.c / sqrt(1. + sph.e12 * sqr(cos_lat));
+    double p = (n + sph.hgt) * cos_lat;
+    
+    car.x = p * cos(sph.lon);
+	car.y = p * sin(sph.lon);
+	car.z = (n + sph.hgt - sph.e2 * n) * sin(sph.lat);
 	
 	RDUMP("========================");
 	RDUMP(car.x);
 	RDUMP(car.y);
 	RDUMP(car.z);
+	RDUMP(sqrt(sqr(car.x) + sqr(car.y) + sqr(car.z)));
 	return car;
+	
+}
+
+
+CSpherical DecToSphCoord(CCartesian car)
+{
+	CSpherical sph;	
+	double D = sqrt(sqr(car.x) + sqr(car.y));
+	
+	if (D == 0.){
+		sph.lat = (M_PI / 2.) * (car.z / abs(car.z));
+		sph.lon = 0.;
+		sph.hgt = car.z * sin(sph.lat) - sph.a * sqrt(1-sph.e2*sqr(sin(sph.lat)));
+	}
+	else{
+		if ((car.y < 0.) and (car.x > 0.)){
+			sph.lon = 2.*M_PI - abs(asin(car.y/D));
+		}
+		else if ((car.y < 0.) and (car.x < 0.)){
+			sph.lon = M_PI + abs(asin(car.y/D));
+		}
+		else if ((car.y > 0.) and (car.x < 0.)){
+			sph.lon = M_PI - abs(asin(car.y/D));
+		}
+		else if ((car.y > 0.) and (car.x > 0.)){
+			sph.lon = abs(asin(car.y/D));
+		}
+		else if ((car.y == 0.) and (car.x > 0.)){
+			sph.lon = 0.;
+		}
+		else if ((car.y == 0.) and (car.x < 0.)){
+			sph.lon = M_PI;
+		}
+		
+		if (car.z == 0.){
+			sph.lat = 0.;
+			sph.hgt = D - sph.a;
+		}
+		else{
+			double r = sqrt(sqr(car.x) + sqr(car.y) + sqr(car.z));
+			double c = asin(car.z/r);
+			double p = (sph.e2*sph.a)/(2.*r);
+			
+			double s1, b, s2 = 0.;
+			do{
+				s1 = s2;
+				b = c + s1;
+				s2 = asin(p*sin(2.*b)/(sqrt(1.-sph.e2*sqr(sin(b)))));
+				sph.lat = b;
+			}while (abs(s2-s1) > pow(10, -4));
+			sph.hgt = D * cos(sph.lat) + car.z * sin(sph.lat) - sph.a*sqrt(1-sph.e2*sqr(sin(sph.lat)));
+		}
+	}
+	RDUMP("========================");
+	sph.lat = RadToDegrees(sph.lat);
+	sph.lon = RadToDegrees(sph.lon);
+	RDUMP(sph.lat);
+	RDUMP(sph.lon);
+	RDUMP(sph.hgt);
+	return sph;
 }
