@@ -6,23 +6,13 @@
 using namespace Upp;
 using namespace std;
 
-//Формат IEEE-754
-class IEEE{
-public:
-	typedef IEEE CLASSNAME;
-	double value;
-	
-	IEEE() {}
-	IEEE(String binStr, int accur);
-private:
-	int sign;
-	double mantiss;
-	double expon;
-};
+#include "JpsStructures.h"
+#include "IEEE.h"
 
 //Главный родительский класс
 class JpsData{
 public:
+	JpsData(){}
 	JpsData(String dt, int size, char inStr[]);
 	
 	String bynStr;			//Бинарная строка данных
@@ -31,6 +21,12 @@ public:
 	int dataLength;
 	//Здесь в дочерних классах добавляется
 	//переменная для данных необходимого типа
+	virtual int getIntVal() {}
+	virtual long int getLongInt() {}
+	virtual double getDoubleVal() {}
+	virtual Vector<int> getIntVect() {}
+	virtual Vector<double> getDoubleVect() {}
+	virtual UtcOffs getUtcOffsVal() {}
 };
 
 //Идентификатор файла
@@ -59,27 +55,40 @@ public:
 //Время приёмника
 class ReceiverTime : public JpsData {
 public:
+	ReceiverTime(long int timOfDay) {tod = timOfDay;}
 	ReceiverTime(String dt, int size, char inStr[]);
 	long int tod;					//Time of Day	{Число секунд от начала суток}
 	int cs;							//Checksum		{Хз что такое. Спросить у Николаев}
+	
+	long int getLongInt() {return tod;}
 };
 
 class ReceiverDate : public JpsData {
 public:
+	ReceiverDate() {}
 	ReceiverDate(String dt, int size, char inStr[]);
 	int year;
 	int month;
 	int day;
 	int base;
 	int cs;
+	
+	Vector<int> getIntVect()
+	{
+		Vector<int> outVect;
+		outVect.Add(year);
+		outVect.Add(month);
+		outVect.Add(day);
+		return outVect;
+	}
 };
 
-//class EpochTime : public JpsData {
-//public:
-//	EpochTime(String dt, char inStr[]);
-//	int tod;					//Time of Day	{Число секунд от начала суток}
-//	int cs;						//Checksum		{Хз что такое. Спросить у Николаев}
-//};
+class EpochTime : public JpsData {
+public:
+	EpochTime(String dt, int size, char inStr[]);
+	int tod;					//Time of Day	{Число секунд от начала суток}
+	int cs;						//Checksum		{Хз что такое. Спросить у Николаев}
+};
 
 //Reference Time to Receiver Time Offset
 class RTtoRTO : public JpsData{
@@ -113,13 +122,12 @@ public:
 };
 
 //GPS to Receiver Time Offset
-class GpsToRecTimOff : public JpsData{
+class GpsToRecTimOff : public RTtoRTO{
 public:
-	GpsToRecTimOff(String dt, int size, char inStr[]);
-	IEEE val;		//8 байт
-	IEEE sval;		//8 байт
+	GpsToRecTimOff(String dt, int size, char inStr[]) : RTtoRTO(dt, size, inStr) {}
 	String sys = "GPS";
 };
+
 
 //GLONASS Time
 class GloTime : public JpsData{
@@ -183,18 +191,6 @@ public:
 	}
 };
 
-struct UtcOffs{
-public:
-	IEEE a0;		//8 байт			[Constant term of polynomial]
-	IEEE a1;		//4 байта			[First order term of polynomial]
-	int tot;		//4 байта unsigned	[Reference time of week (s)]
-	int wnt;		//2 байта unsigned	[Reference week number]
-	int dtls;		//1 байт  signed	[Delta time due leap seconds (s)]
-	int dn;			//1 байт  unsigned	['Future' reference day number (1..7)]
-	int wnlsf;		//2 байта unsigned	['Future' reference week number]
-	int dtlsf;		//1 байт  signed	['Future' delta time due to leap seconds]
-};
-
 //GPS UTS Time Parameters
 class GpsUtcTimParam : public JpsData{
 public:
@@ -217,6 +213,7 @@ public:
 class GalUtcGpsParam : public JpsData{
 public:
 	GalUtcGpsParam(String dt, int size, char inStr[]);
+	UtcOffs utc;	//GPS UTC time offset parameters
 	IEEE a0g;		//4 байта			[Constant term of time offset (s)]
 	IEEE a1g;		//4 байта			[Rate of time offset]
 	int t0g;		//4 байта unsigned	[Reference time of week]
@@ -267,9 +264,9 @@ public:
 };
 
 //Cartesian Position
-class pos : public JpsData{
+class Pos : public JpsData{
 public:
-	pos(String dt, int size, char inStr[]);
+	Pos(String dt, int size, char inStr[]);
 	IEEE x, y, z;	//8 байт
 	IEEE pSigma;	//4 байта
 	int solType;	//Solution type
@@ -371,21 +368,6 @@ public:
 	IEEE edop;		//4 байтa			[East dilution of precision (EDOP)]
 };
 
-//Ковариационная матрица
-struct CovMatr {
-	IEEE xx;		//4 байтa
-	IEEE yy;		//4 байтa
-	IEEE zz;		//4 байтa
-	IEEE tt;		//4 байтa
-	IEEE xy;		//4 байтa
-	IEEE xz;		//4 байтa
-	IEEE xt;		//4 байтa
-	IEEE yz;		//4 байтa
-	IEEE yt;		//4 байтa
-	IEEE zt;		//4 байтa
-	int solType;	//1 байт
-};
-
 //Position Covariance Matrix
 class PosCov : public JpsData{
 public:
@@ -458,6 +440,9 @@ class SatIndex : public JpsData{
 public:
 	SatIndex(String dt, int size, char inStr[]);
 	Vector <int> usi;	//1 байт unsigned	[Array of Sat Indices]
+	
+	//метод для выдачи данных
+	
 };
 
 //Antenna names
@@ -472,6 +457,15 @@ class SatNumbers : public JpsData {
 public:
 	SatNumbers(String dt, int size, char inStr[]);
 	Vector <int> osn;	//1 байт			[Glonass SV orbit slot number]
+	
+	Vector <int> getIntVect()
+	{
+		Vector <int> outVect;
+		for (int i = 0; i < osn.GetCount(); i++){
+			outVect.Add(osn[i]);
+		}
+		return outVect;
+	}
 };
 
 //Satellite Elevations
@@ -510,15 +504,118 @@ public:
 	Vector <IEEE> rpr;	//4 байта	[PR - REF]
 };
 
-//////////////////////////////////////
-//дописать остальные псевдодальности//
-//////////////////////////////////////
+//Integer Relative Pseudo-ranges
+class SRPR : public JpsData {
+public:
+	SRPR(String dt, int size, char inStr[], String type);
+	Vector <int> srpr;	//2 байта unsigned		[(PR(s) - REF(s) - 2*10^(-7)) * 10^(11)]
+	//Detales at GREIS Ref. guide p 84
+};
+
+
+
+//Smoothing Corrections	[CC], [C1], [C2], [C3], [C5], [Cl]
+class SC : public JpsData{
+public:
+	SC(String dt, int size, char inStr[], String type);
+	Vector <Smooth> smooth;		//[Smoothing correction]
+};
+
+//Smoothing corrections [cc], [c1], [c2], [c3], [c5], [cl]
+class SS : public JpsData {
+public:
+	SS(String dt, int size, char inStr[], String type);
+	Vector <int> smooth;	//2 байта signed	[Smoothing correctiom (s * 10^(-11))]
+};
+
+//Carrier Phases
+class CP : public JpsData {
+public:
+	CP (String dt, int size, char inStr[], String type);
+	Vector <IEEE> cp;		//8 байт			[CP (cycles)]
+};
+
+//Integer carrier phases
+class SCP : public JpsData{
+public:
+	SCP(String dt, int size, char inStr[], String type);
+	Vector <IEEE> scp;		//4 байта			[CP (cycles/1024)]
+};
+
+//Relative Carrier Phases
+class RCP_RC : public JpsData {
+public:
+	RCP_RC(String dt, int size, char inStr[], String type);
+	Vector <IEEE> rcp;		//4 байта			[cp / Fln - prRC (s)]
+};
+
+//Integer Relative Carrier Phases
+class RCP_rc : public JpsData{
+public:
+	RCP_rc(String dt, int size, char inStr[], String type);
+	Vector <int> rcp;		//2 байта signed	[cp / Fln - prREF (s * 2^(-40)))]
+};
+
+//Doppler
+class Doppler : public JpsData {
+public:
+	Doppler(String dt, int size, char inStr[], String type);
+	Vector <int> dp;		//4 байта signed	[DP (Hz - 10^(-4))]
+};
+
+//Relative Doppler
+class SRDP : public JpsData {
+public:
+	SRDP(String dt, int size, char inStr[], String type);
+	Vector <int> srdp;		//2 байта signed	[dp * Fl1/Fl2 - dpCA1 (Hz * 10^(-4))]
+};
+
+//SNR
+class CNR : public JpsData {
+public:
+	CNR(String dt, int size, char inStr[], String type);
+	String cnrType;
+	Vector <int> cnr;		//1 байт unsigned	[C/N0 (dB*Hz)]
+};
+
+//SNR x 4
+class CNR_4 : public JpsData {
+public:
+	CNR_4(String dt, int size, char inStr[], String type);
+	String cnrType;
+	Vector <int> cnrX4;		//1 байт unsigned	[C/N0 (0.25*dB*Hz)]
+};
+
+//Signal Lock Loop Flags
+class Flags : public JpsData {
+public:
+	Flags(String dt, int size, char inStr[], String type);
+	String flagType;
+	Vector <int> flags;		//2 байта unsigned	[Lock Loop Flags (bitfield)]
+	//Details at GREIS ref.guid. p. 88
+};
+
+//Raw Inphases
+class IAmp : public JpsData {
+public:
+	IAmp(String dt, int size, char inStr[], String type);
+	Vector <int> amp;		//2 байта signed	[(I) amplitudes]
+};
+
+//Raw quadratures
+class QAmp : public JpsData {
+public:
+	QAmp(String dt, int size, char inStr[], String type);
+	String thisType;
+	Vector <int> amp;		//2 байта signed	[(Q) amplitudes]
+};
 
 //CA/L1 Continuous Tracking Time
 class TrackingTimeCA : public JpsData {
 public:
 	TrackingTimeCA(String dt, int size, char inStr[], String type);
-	Vector <int> tt;	//2 байта unsigned	[tracking time (s)]
+	String TimeType;
+	Vector <int> tt;		//2 байта unsigned	[tracking time (s)]
 };
 
 //Satellite Navigation Status
@@ -637,8 +734,9 @@ public:
 	IEEE argPer;	//4 байта			[Argument of perigee at r-tim (semi-circles)]
 	IEEE delT;		//4 байта			[Correction to mean Draconic period at r-tim (s/period)]
 	IEEE delTdt;	//4 байта			[Rate of change of draconic period (s/period)]
+	IEEE deli;		//4 байтa			[Correction to inclination at reference time (semi-circles)]
 	int n4;			//1 байт			[Number of 4-year period]
-	int navTipe;	//1 байт			[Signal type nav. data was decoded from]
+	int navType;	//1 байт			[Signal type nav. data was decoded from]
 	IEEE gammaN;	//4 байта			[Rate of coarse satellite clock correction to GLO time scale (s/s)]
 };
 
@@ -705,17 +803,6 @@ public:
 	IEEE cis;		//4 байта				[Amplitude of the cosine harmonic correction term to the angle of inclination (m)]]
 };
 
-struct GpsEphCnavIsc{
-	IEEE fIscL1CA;	//4 байта				[Inter-signal correction between L1P(Y) and C/A]
-	IEEE fIscL2C;	//4 байта				[Inter-signal correction between L1P(Y) and L2C]
-	IEEE fIscL5I5;	//4 байта				[Inter-signal correction between L1P(Y) and L5I5]
-	IEEE fIscL5Q5;	//4 байта				[Inter-signal correction between L1P(Y) and L5Q5]
-};
-
-struct GpsEphCnav2Isc{
-	IEEE fIscL1CP;	//4 байта				[Inter-signal correction between L1P(Y) and L1CP]
-	IEEE fIscL1CD;	//4 байта				[Inter-signal correction between L1P(Y) and L1CD]
-};
 
 //GPS optional data
 class GpsEphOptData {
@@ -785,17 +872,17 @@ public:
 	//====GLONASS-M data====
 	IEEE fDelTauN;		//4 байта
 	int nFt;			//1 байт unsigned
-	int nNt;			//1 байт unsigned
-	int flags;			//2 байтф unsigned
+	int nN4;			//1 байт unsigned
+	int flags2;			//2 байтф unsigned
 	//----Optional data block----
 	int navType;		//1 байт unsigned
 	IEEE beta;			//4 байта
-	IEEE tuSysDot;		//4 байта
+	IEEE tauSysDot;		//4 байта
 	int ec;				//1 байт unsigned
 	int ee;				//1 байт unsigned
 	int fc;				//1 байт signed
 	int fe;				//1 байт signed
 	int  reserv;		//2 байта unsigned
-}
+};
 
 #endif
