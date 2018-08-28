@@ -103,7 +103,6 @@ double mjdTojd(double mjd){
     -------
     jd : double
         Julian Day
-    
         
     */
 	return mjd + 2400000.5;
@@ -136,7 +135,6 @@ double hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
     --------
     >>> hmsm_to_days(hour=6)
     0.25
-    
     */
     double days;
     
@@ -149,7 +147,7 @@ double hmsmTodays(int hour=0, int min=0,int sec=0, int micro=0){
 	return days / 24.;
 }
 
-CDatetime daysTohmsm(double days){
+CDateTime daysTohmsm(double days){
     /*
     Convert fractional days to hours, minutes, seconds, and microseconds.
     Precision beyond microseconds is rounded to the nearest microsecond.
@@ -184,7 +182,7 @@ CDatetime daysTohmsm(double days){
     (2, 24, 0, 0)
     
     */
-    CDatetime datetime;
+    CDateTime datetime;
     
     double hours,hour;
     hours = days * 24.;
@@ -206,7 +204,7 @@ CDatetime daysTohmsm(double days){
 	return datetime;
 }
 
-double datetimeTojd(CDatetime datetime){
+double datetimeTojd(CDateTime datetime){
     /*
     Convert a `datetime.datetime` object to Julian Day.
     
@@ -318,7 +316,7 @@ CDate jdTodate(double jd){
 	return date;
 }
 
-CDatetime jdTodatetime(double jd){
+CDateTime jdTodatetime(double jd){
     /*
     Convert a Julian Day to an `jdutil.datetime` object.
     
@@ -338,7 +336,7 @@ CDatetime jdTodatetime(double jd){
     datetime(1985, 2, 17, 6, 0)
     
     */
-    CDatetime datetime;
+    CDateTime datetime;
     CDate date;
     
     date = jdTodate(jd);
